@@ -5,16 +5,23 @@ int main()
 {
  
     char asciiLarge[] = {" .'`^,:;Il!i><~+fjrxnuvcz0OZmwqpao*#MW&8B@$"};
-    char asciiSmall[] = {" .:-=+*#\%@"};
-    int greyscaleProportion = 255 /  sizeof(asciiSmall);
+    char asciiSmall[][2] = { {' ', '0'}, {'.', '1'}, {':', '2'}, {'-', '2'}, {'=', '3'}, {'+', '4'}, {'*', '3'}, {'#', '4'}, {'\%','5'}, {'@', '5'} };
+
+    int greyscaleProportion = 255 / ( sizeof(asciiSmall) / sizeof(asciiSmall[0]) );
     int lenalength[2] = { sizeof(lena[0]) / sizeof(int), sizeof(lena[1]) / sizeof(int) };
 
-    for(int i = 0; i < lenalength[1]; i++)
+    for(int i = 0; i < lenalength[0]; i++)
     {
-        for(int o = 0; o < lenalength[0]; o++)
+        for(int o = 0; o < lenalength[1]; o++)
         {
-            int c = (lena[i][511 - o]) / greyscaleProportion;
-            printf("%c", asciiSmall[c]);
+            int c = (lena[i][(lenalength[0] -1) - o]) / greyscaleProportion;
+            char buffer[10];
+            
+            sprintf(buffer,  "\033[0;3%cm", asciiSmall[c][1]);
+            printf(buffer);
+            printf("%c", asciiSmall[c][0]);
+            printf("\033[0m");
+            
         }
         printf("\n");
     }
