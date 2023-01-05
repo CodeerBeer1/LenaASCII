@@ -6,9 +6,12 @@ int lena[512][512];
 int printLena(int start, int end)
 {
 
-    char asciiSmall[][2] = { {' ', '0'}, {'.', '1'}, {':', '2'}, {'-', '2'}, {'=', '3'}, {'+', '4'}, {'*', '3'}, {'#', '4'}, {'\%','5'}, {'@', '5'} };
+    FILE* fileToWrite;
+    fileToWrite = fopen("mylena.txt", "w");
 
-    int greyscaleProportion = 255 / ( sizeof(asciiSmall) / sizeof(asciiSmall[0]) );
+    char ascii[][2] = { {' ', '0'}, {'.', '1'}, {':', '2'}, {'-', '2'}, {'=', '3'}, {'+', '4'}, {'*', '3'}, {'#', '4'}, {'\%','5'}, {'@', '5'} };
+
+    int greyscaleProportion = 255 / ( sizeof(ascii) / sizeof(ascii[0]) );
     int lenalength[2] = { sizeof(lena[0]) / sizeof(int), sizeof(lena[1]) / sizeof(int) };
     int avg;
 
@@ -19,13 +22,16 @@ int printLena(int start, int end)
             avg += lena[i][o];
             int c = (lena[i][(lenalength[0] -1) - o]) / greyscaleProportion;
             char buffer[10];
-            sprintf(buffer,  "\033[0;3%cm", asciiSmall[c][1]);
+            sprintf(buffer,  "\033[0;3%cm", ascii[c][1]);
             printf(buffer);
-            printf("%c", asciiSmall[c][0]);
+            printf("%c", ascii[c][0]);
             printf("\033[0m");
+
+            putc(ascii[c][0], fileToWrite);
             
         }
         printf("\n");
+        putc('\n', fileToWrite);
     }
 
     return avg / ((end - start) * (end - start));
@@ -34,14 +40,14 @@ int printLena(int start, int end)
 int main()
 {
 
-    FILE* file = fopen("lena.txt", "r");
+    FILE* lenaFile = fopen("lena.txt", "r");
 
-    while(!feof(file))
+    while(!feof(lenaFile))
     {
         int data[3];
         int i = 0;
         char buffer[12];
-        fgets(buffer, sizeof(buffer), file);
+        fgets(buffer, sizeof(buffer), lenaFile);
         for (int y = 0; y < 3; y++)
         {
             // [4] for the last nul-character.
