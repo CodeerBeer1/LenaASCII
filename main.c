@@ -3,7 +3,7 @@
 
 int lena[512][512];
 
-int printLena(int start, int end)
+int GenerateLena(int start, int end)
 {
 
     FILE* fileToWrite;
@@ -20,13 +20,19 @@ int printLena(int start, int end)
         for(int o = start; o < end; o++)
         {
             avg += lena[i][o];
+
+            // The image gets mirrored by substracting the total 'x-axis' length with the image starting point.
             int c = (lena[i][(lenalength[0] -1) - o]) / greyscaleProportion;
+
+            // Combines the color code and the corresponding number character into one buffer using sprintf().
             char buffer[10];
+
             sprintf(buffer,  "\033[0;3%cm", ascii[c][1]);
             printf(buffer);
             printf("%c", ascii[c][0]);
             printf("\033[0m");
 
+            // Writes the character to the file where it has to be written into.
             putc(ascii[c][0], fileToWrite);
             
         }
@@ -34,23 +40,30 @@ int printLena(int start, int end)
         putc('\n', fileToWrite);
     }
 
+    // Returns the calculated average grayscale value.
     return avg / ((end - start) * (end - start));
 }
 
 int main()
 {
 
+    // Opens the lena.txt file.
     FILE* lenaFile = fopen("lena.txt", "r");
 
     while(!feof(lenaFile))
     {
+        // The significant values are stored in an array.
         int data[3];
+
+        // i is used for the buffer to be independent of the loop.
         int i = 0;
         char buffer[12];
+
         fgets(buffer, sizeof(buffer), lenaFile);
         for (int y = 0; y < 3; y++)
         {
-            // [4] for the last nul-character.
+            // A piece of data gets read into _register. 
+            // [4] for the last null-character.
             char _register[4];
             for(int u = 0; u < 3; u++)
             {
@@ -61,10 +74,12 @@ int main()
             data[y] = s;
             i++;
         }
+
+        // Constructing the main lena array using the values.
         lena[data[0]][data[1]] = data[2];
     }
 
-int avg = printLena(100, 400);
+int avg = GenerateLena(100, 400);
 
 printf("%d", avg);
 
