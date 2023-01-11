@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -17,17 +18,17 @@ int GenerateLena(int start, int end)
 
     for(int i = start; i < end; i++)
     {
-        for(int o = start; o < end; o++)
+        for(int o = end; o > start; o--)
         {
             avg += lena[i][o];
 
             // The image gets mirrored by substracting the total 'x-axis' length with the image starting point.
-            int c = (lena[i][(lenalength[0] -1) - o]) / greyscaleProportion;
+            int c = (lena[i][o]) / greyscaleProportion;
 
             // Combines the color code and the corresponding number character into one buffer using sprintf().
             char buffer[10];
 
-            sprintf(buffer,  "\033[0;3%cm", ascii[c][1]);
+            sprintf(buffer, "\033[0;3%cm", ascii[c][1]);
             printf(buffer);
             printf("%c", ascii[c][0]);
             printf("\033[0m");
@@ -53,26 +54,32 @@ int main()
     while(!feof(lenaFile))
     {
         // The significant values are stored in an array.
-        int data[3];
+        int data[3] = {0};
 
         // i is used for the buffer to be independent of the loop.
         int i = 0;
-        char buffer[12];
-
+        char buffer[12] = {0};
         fgets(buffer, sizeof(buffer), lenaFile);
         for (int y = 0; y < 3; y++)
         {
             // A piece of data gets read into _register. 
             // [4] for the last null-character.
-            char _register[4];
-            for(int u = 0; u < 3; u++)
+            char _register[4] = {0};
+            for(int u = 0; u < 4; u++)
             {
-                _register[u] = buffer[i];
-                i++;
+                if(buffer[i] != '\t')
+                {
+                    _register[u] = buffer[i];
+                    i++;
+                }
+
+                else
+                {
+                    i++;
+                    break;
+                }
             }
-            int s = atoi(_register);
-            data[y] = s;
-            i++;
+            data[y] = atoi(_register);
         }
 
         // Constructing the main lena array using the values.
